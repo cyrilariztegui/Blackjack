@@ -128,42 +128,65 @@ input:checked+.tsl:before{transform:translateX(18px)}
 /* BANKRUPT */
 .bkov{position:absolute;inset:0;background:rgba(0,0,0,.93);z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.85rem}
 .bkt{font-family:'Playfair Display',serif;font-size:1.9rem;color:#e74c3c;text-align:center}
-/* ANALYSIS PANEL */
-.apanel{position:absolute;top:0;left:0;bottom:0;width:min(310px,92vw);background:rgba(3,16,8,.97);border-right:1px solid rgba(201,168,76,.18);z-index:22;transform:translateX(-100%);transition:transform .28s ease;display:flex;flex-direction:column;overflow:hidden}
-.apanel.open{transform:translateX(0)}
-.ah{padding:.7rem .9rem;border-bottom:1px solid rgba(201,168,76,.12);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.ah-t{color:var(--gold);font-size:.75rem;letter-spacing:.1em}
-.atabs{display:flex;gap:.3rem;padding:.5rem .7rem;border-bottom:1px solid rgba(201,168,76,.08);flex-shrink:0}
-.atab{background:transparent;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.45);border-radius:6px;padding:5px 10px;font-family:'DM Mono',monospace;font-size:.62rem;cursor:pointer;transition:all .15s;flex:1;text-align:center}
-.atab.on{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.4);color:var(--gold)}
-.abody{flex:1;overflow-y:auto;padding:.7rem}
-/* Deck tracker */
-.dk-row{display:flex;align-items:center;gap:.45rem;margin-bottom:.42rem}
-.dk-val{width:22px;text-align:center;color:rgba(255,255,255,.7);font-size:.68rem;font-weight:600;flex-shrink:0}
-.dk-track{flex:1;background:rgba(255,255,255,.08);border-radius:3px;height:6px;overflow:hidden}
+/* ANALYSIS DRAWER — bottom sheet, ~42% height, tapis visible au-dessus */
+.apanel{
+  position:absolute;left:0;right:0;bottom:0;
+  height:44%;
+  background:rgba(4,14,8,.96);
+  border-top:1px solid rgba(201,168,76,.25);
+  border-radius:14px 14px 0 0;
+  z-index:22;
+  transform:translateY(100%);
+  transition:transform .28s cubic-bezier(.32,.72,0,1);
+  display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:0 -8px 32px rgba(0,0,0,.6);
+}
+.apanel.open{transform:translateY(0)}
+/* drag handle */
+.apanel::before{
+  content:'';display:block;width:36px;height:3px;
+  background:rgba(255,255,255,.2);border-radius:2px;
+  margin:.5rem auto .1rem;flex-shrink:0;
+}
+.ah{padding:.35rem .85rem .35rem;border-bottom:1px solid rgba(201,168,76,.1);
+  display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.ah-t{color:var(--gold);font-size:.7rem;letter-spacing:.1em}
+.atabs{display:flex;gap:.3rem;padding:.35rem .7rem;border-bottom:1px solid rgba(201,168,76,.07);flex-shrink:0}
+.atab{background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);
+  border-radius:6px;padding:4px 10px;font-family:'DM Mono',monospace;font-size:.6rem;
+  cursor:pointer;transition:all .15s;flex:1;text-align:center}
+.atab.on{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.35);color:var(--gold)}
+.abody{flex:1;overflow-y:auto;padding:.55rem .75rem;-webkit-overflow-scrolling:touch}
+/* Deck tracker — compact horizontal layout */
+.dk-row{display:flex;align-items:center;gap:.4rem;margin-bottom:.3rem}
+.dk-val{width:20px;text-align:center;color:rgba(255,255,255,.65);font-size:.62rem;font-weight:600;flex-shrink:0}
+.dk-track{flex:1;background:rgba(255,255,255,.07);border-radius:3px;height:5px;overflow:hidden}
 .dk-fill{height:100%;border-radius:3px;transition:width .3s}
-.dk-cnt{width:28px;text-align:right;font-size:.6rem;color:rgba(255,255,255,.4)}
-.dk-pct{width:32px;text-align:right;font-size:.6rem;font-weight:600}
-.rich-box{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:.55rem .7rem;margin-bottom:.65rem}
-.rich-label{color:rgba(201,168,76,.6);font-size:.58rem;letter-spacing:.12em;margin-bottom:.2rem}
-.rich-val{color:var(--gold);font-size:.95rem;font-weight:600}
-.rich-sub{color:rgba(255,255,255,.35);font-size:.58rem;margin-top:.15rem}
-/* Probability panel */
-.prob-action{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:.6rem .75rem;margin-bottom:.5rem;transition:all .2s}
-.prob-action.best{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.35)}
-.prob-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem}
-.prob-name{font-size:.72rem;font-weight:600}
-.prob-pct{font-size:.85rem;font-weight:700}
-.prob-bar-track{background:rgba(255,255,255,.08);border-radius:3px;height:5px;overflow:hidden;margin-bottom:.3rem}
+.dk-cnt{width:34px;text-align:right;font-size:.55rem;color:rgba(255,255,255,.35)}
+.dk-pct{width:28px;text-align:right;font-size:.58rem;font-weight:600}
+.rich-box{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.18);border-radius:7px;
+  padding:.4rem .65rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.65rem}
+.rich-label{color:rgba(201,168,76,.55);font-size:.54rem;letter-spacing:.1em}
+.rich-val{color:var(--gold);font-size:.9rem;font-weight:700}
+.rich-sub{color:rgba(255,255,255,.3);font-size:.54rem}
+/* Probability panel — compact */
+.prob-action{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:8px;padding:.45rem .6rem;margin-bottom:.35rem;transition:all .2s}
+.prob-action.best{background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.3)}
+.prob-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem}
+.prob-name{font-size:.68rem;font-weight:600}
+.prob-pct{font-size:.8rem;font-weight:700}
+.prob-bar-track{background:rgba(255,255,255,.07);border-radius:3px;height:4px;overflow:hidden;margin-bottom:.22rem}
 .prob-bar-fill{height:100%;border-radius:3px;transition:width .4s}
-.prob-detail{display:flex;gap:.5rem;flex-wrap:wrap}
-.prob-chip{background:rgba(255,255,255,.06);border-radius:4px;padding:2px 7px;font-size:.56rem;color:rgba(255,255,255,.45)}
-.prob-chip span{color:rgba(255,255,255,.7)}
-.deck-warning{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);border-radius:7px;padding:.5rem .7rem;margin-bottom:.6rem;color:rgba(231,76,60,.8);font-size:.62rem}
-.shoe-info{display:flex;gap:.5rem;margin-bottom:.65rem;flex-wrap:wrap}
-.shoe-chip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 9px;font-size:.6rem;text-align:center}
-.shoe-chip-v{color:var(--gold);font-weight:600}
-.shoe-chip-l{color:rgba(255,255,255,.35);font-size:.55rem}
+.prob-detail{display:flex;gap:.4rem;flex-wrap:wrap}
+.prob-chip{background:rgba(255,255,255,.05);border-radius:4px;padding:2px 6px;font-size:.53rem;color:rgba(255,255,255,.4)}
+.prob-chip span{color:rgba(255,255,255,.65)}
+.deck-warning{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.18);border-radius:6px;
+  padding:.35rem .6rem;margin-bottom:.45rem;color:rgba(231,76,60,.75);font-size:.58rem}
+.shoe-info{display:flex;gap:.4rem;margin-bottom:.5rem}
+.shoe-chip{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:3px 8px;font-size:.58rem;text-align:center;flex:1}
+.shoe-chip-v{color:var(--gold);font-weight:600;font-size:.72rem}
+.shoe-chip-l{color:rgba(255,255,255,.3);font-size:.5rem}
 /* PORTRAIT LOCK */
 @media screen and (orientation:landscape){
   body::before{content:'Tourne ton téléphone en portrait';position:fixed;inset:0;background:#000;color:var(--gold);font-size:1rem;display:flex;align-items:center;justify-content:center;z-index:9999;text-align:center;padding:2rem;}
@@ -837,6 +860,10 @@ function checkTrain(action){
   else{box.className='hint ng';box.innerHTML='<span>❌ Erreur ! Il fallait : '+lbl[correct]+'</span>';}
   area.appendChild(box);
 }
+function refreshAnalysis(){
+  var panel=document.getElementById('apanel');
+  if(panel&&panel.classList.contains('open'))renderAnalysisPanel();
+}
 function doHit(){
   if(G.phase!=='play')return;
   checkTrain('H');
@@ -849,8 +876,12 @@ function doHit(){
       advanceSplit();
     }else endHand('bust');
   }else if(hval(hand)===21){
+    refreshAnalysis();
     setTimeout(doStand,G.cfg.speed||100);
-  }else{renderActions();renderHint();}
+  }else{
+    renderActions();renderHint();
+    refreshAnalysis();
+  }
 }
 function doStand(){
   if(G.phase!=='play')return;
@@ -873,6 +904,7 @@ function doDouble(){
   }
   hand.push(deal());sCard();
   renderCards();renderTotals();
+  refreshAnalysis();
   if(G.split){
     G.split.done[G.split.current]=true;
     if(isBust(hand)){advanceSplit();}
@@ -1389,11 +1421,13 @@ function renderDeckTab(){
   html+='<div class="shoe-chip"><div class="shoe-chip-v">'+shoeUsed+'%</div><div class="shoe-chip-l">sabot utilisé</div></div>';
   html+='<div class="shoe-chip"><div class="shoe-chip-v">'+G.cfg.decks+'</div><div class="shoe-chip-l">decks</div></div>';
   html+='</div>';
-  // True count / richness
+  // True count — horizontal compact
   html+='<div class="rich-box">';
-  html+='<div class="rich-label">TRUE COUNT (HI-LO)</div>';
+  html+='<div>';
+  html+='<div class="rich-label">TRUE COUNT</div>';
   html+='<div class="rich-val" style="color:'+richColor+'">'+(tc>=0?'+':'')+tc.toFixed(1)+'</div>';
-  html+='<div class="rich-sub">'+richText+'</div>';
+  html+='</div>';
+  html+='<div style="flex:1"><div class="rich-sub">'+richText+'</div></div>';
   html+='</div>';
 
   if(shoeUsed>72){
@@ -1508,38 +1542,35 @@ function renderProbTab(){
   var winColor=wp.win>=55?'#27ae60':wp.win>=40?'#c9a84c':'#e74c3c';
 
   var html='';
-  // ── WIN PROBABILITY HERO BLOCK ──
-  html+='<div style="background:rgba(0,0,0,.35);border:1px solid rgba(201,168,76,.22);border-radius:10px;padding:.75rem;margin-bottom:.7rem">';
-  html+='<div style="color:rgba(255,255,255,.35);font-size:.55rem;letter-spacing:.14em;margin-bottom:.5rem">PROBABILITÉ DE GAGNER LA MAIN</div>';
-  // Big win number
-  html+='<div style="display:flex;align-items:baseline;gap:.35rem;margin-bottom:.5rem">';
-  html+='<div style="font-size:2rem;font-weight:700;color:'+winColor+';font-family:Playfair Display,serif">'+wp.win+'%</div>';
-  html+='<div style="font-size:.65rem;color:rgba(255,255,255,.4)">de victoire avec main '+pv+'</div>';
+  // ── WIN PROBABILITY HERO BLOCK ── compact for drawer
+  html+='<div style="background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.2);border-radius:9px;padding:.55rem .7rem;margin-bottom:.55rem">';
+  html+='<div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem">';
+  html+='<div style="font-size:1.6rem;font-weight:700;color:'+winColor+';font-family:Playfair Display,serif;line-height:1">'+wp.win+'%</div>';
+  html+='<div>';
+  html+='<div style="color:rgba(255,255,255,.6);font-size:.62rem;font-weight:600">de victoire</div>';
+  html+='<div style="color:rgba(255,255,255,.3);font-size:.55rem">main '+pv+' vs croupier '+G.dh[0].v+'</div>';
   html+='</div>';
-  // Win/Push/Lose bar
-  var wPct=Math.max(1,wp.win), puPct=Math.max(1,wp.push), lPct=Math.max(1,wp.lose);
-  html+='<div style="display:flex;border-radius:4px;overflow:hidden;height:8px;margin-bottom:.45rem">';
-  html+='<div style="width:'+wPct+'%;background:#27ae60;transition:width .4s"></div>';
-  html+='<div style="width:'+puPct+'%;background:#c9a84c;transition:width .4s"></div>';
-  html+='<div style="width:'+lPct+'%;background:#e74c3c;transition:width .4s"></div>';
   html+='</div>';
-  // Legend
-  html+='<div style="display:flex;gap:.65rem">';
-  html+='<div style="font-size:.6rem"><span style="color:#27ae60;font-weight:700">■</span> <span style="color:rgba(255,255,255,.5)">Victoire '+wp.win+'%</span></div>';
-  html+='<div style="font-size:.6rem"><span style="color:#c9a84c;font-weight:700">■</span> <span style="color:rgba(255,255,255,.5)">Égalité '+wp.push+'%</span></div>';
-  html+='<div style="font-size:.6rem"><span style="color:#e74c3c;font-weight:700">■</span> <span style="color:rgba(255,255,255,.5)">Défaite '+wp.lose+'%</span></div>';
+  // Tricolor bar
+  var wPct=Math.max(1,wp.win),puPct=Math.max(1,wp.push),lPct=Math.max(1,wp.lose);
+  html+='<div style="display:flex;border-radius:3px;overflow:hidden;height:6px;margin-bottom:.3rem">';
+  html+='<div style="width:'+wPct+'%;background:#27ae60"></div>';
+  html+='<div style="width:'+puPct+'%;background:#c9a84c"></div>';
+  html+='<div style="width:'+lPct+'%;background:#e74c3c"></div>';
+  html+='</div>';
+  html+='<div style="display:flex;gap:.5rem">';
+  html+='<span style="font-size:.55rem"><span style="color:#27ae60">■</span> <span style="color:rgba(255,255,255,.45)">'+wp.win+'%</span></span>';
+  html+='<span style="font-size:.55rem"><span style="color:#c9a84c">■</span> <span style="color:rgba(255,255,255,.45)">'+wp.push+'%</span></span>';
+  html+='<span style="font-size:.55rem"><span style="color:#e74c3c">■</span> <span style="color:rgba(255,255,255,.45)">'+wp.lose+'%</span></span>';
+  html+='<span style="font-size:.5rem;color:rgba(255,255,255,.25);margin-left:auto">Victoire · Égalité · Défaite</span>';
   html+='</div>';
   html+='</div>';
 
-  // Context
-  html+='<div style="background:rgba(255,255,255,.04);border-radius:8px;padding:.55rem .7rem;margin-bottom:.6rem">';
-  html+='<div style="color:rgba(255,255,255,.35);font-size:.56rem;letter-spacing:.1em;margin-bottom:.35rem">CONTEXTE</div>';
-  html+='<div style="display:flex;gap:.5rem;flex-wrap:wrap">';
-  html+='<div class="prob-chip">Main : <span>'+pv+'</span></div>';
-  html+='<div class="prob-chip">Croupier : <span>'+G.dh[0].v+'</span></div>';
-  html+='<div class="prob-chip">P(croupier bust) : <span>'+dBustP+'%</span></div>';
-  html+='<div class="prob-chip">Cartes rest. : <span>'+ds.totalRemaining+'</span></div>';
-  html+='</div></div>';
+  // Context — inline compact
+  html+='<div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.5rem">';
+  html+='<div class="prob-chip">Croupier bust <span>'+dBustP+'%</span></div>';
+  html+='<div class="prob-chip">Deck <span>'+ds.totalRemaining+' cartes</span></div>';
+  html+='</div>';
 
   html+='<div style="color:rgba(255,255,255,.35);font-size:.56rem;letter-spacing:.12em;margin-bottom:.45rem">EV PAR ACTION (deck réel)</div>';
 
