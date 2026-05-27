@@ -25,6 +25,7 @@ tailwind.config={darkMode:"class",theme:{extend:{colors:{
 </script>
 <style>
 *{-webkit-tap-highlight-color:transparent;box-sizing:border-box}
+html,body{height:100%;max-height:100%}
 body{background:radial-gradient(circle at 50% 0%,#0b513d 0%,#121415 100%);min-height:100dvh;overflow-x:hidden;font-family:'Inter',sans-serif}
 .glass{background:rgba(255,255,255,.04);backdrop-filter:blur(20px);border:1px solid rgba(242,202,80,.1)}
 .gold-glow{box-shadow:0 0 20px rgba(242,202,80,.4)}
@@ -32,6 +33,9 @@ body{background:radial-gradient(circle at 50% 0%,#0b513d 0%,#121415 100%);min-he
 /* Pages */
 .page{display:none;flex-direction:column;min-height:100dvh}
 .page.active{display:flex}
+/* Game page specifically: fixed height, no scroll */
+#page-game{height:100dvh;max-height:100dvh;overflow:hidden;min-height:unset}
+#page-game.active{display:flex}
 /* Cards */
 .play-card{width:58px;height:82px;border-radius:8px;background:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:4px 5px;box-shadow:0 6px 16px rgba(0,0,0,.7),0 2px 4px rgba(0,0,0,.4);font-family:'Montserrat',sans-serif;font-weight:700;user-select:none;flex-shrink:0;animation:dealAnim .2s ease-out}
 .play-card.sm{width:46px;height:65px}
@@ -168,7 +172,7 @@ body{background:radial-gradient(circle at 50% 0%,#0b513d 0%,#121415 100%);min-he
         <div class="absolute inset-0 flex flex-col items-center justify-end pb-8 px-5 text-center">
           <div style="font-family:'Montserrat',sans-serif;font-size:clamp(2rem,7vw,3rem);font-weight:800;color:#ffe088;letter-spacing:.05em;text-shadow:0 0 30px rgba(242,202,80,.5);margin-bottom:.25rem">ROYAL TABLE</div>
           <div class="text-on-surface-variant text-sm mb-5">Mise min. <span id="home-minbet">5</span>€ • Payout 3:2</div>
-          <button onclick="goPage('game')" class="w-full py-3.5 rounded-xl font-bold text-on-primary flex items-center justify-center gap-2 uppercase tracking-wide gold-glow" style="background:linear-gradient(135deg,#f2ca50,#ffe088);font-family:'Montserrat',sans-serif">
+          <button onclick="startGame()" class="w-full py-3.5 rounded-xl font-bold text-on-primary flex items-center justify-center gap-2 uppercase tracking-wide gold-glow" style="background:linear-gradient(135deg,#f2ca50,#ffe088);font-family:'Montserrat',sans-serif">
             ▶ JOUER MAINTENANT
           </button>
         </div>
@@ -228,7 +232,7 @@ body{background:radial-gradient(circle at 50% 0%,#0b513d 0%,#121415 100%);min-he
   </div>
 
   <!-- Table zone -->
-  <div id="tz" class="flex-1 flex flex-col justify-between px-3 py-2 overflow-hidden relative" style="display:flex">
+  <div id="tz" class="flex flex-col px-3 py-2 relative" style="flex:1;overflow:hidden;min-height:0">
     <!-- Dealer -->
     <div class="flex flex-col items-center gap-1.5">
       <div class="text-on-surface-variant uppercase tracking-widest" style="font-size:.52rem">CROUPIER</div>
