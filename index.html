@@ -519,7 +519,19 @@ input:checked+.tsl:before{transform:translateX(19px)}
 
       <div class="scard">
         <div class="scard-t">💰 Mises</div>
-        <div class="srow"><span class="lbl">Bankroll</span><div class="segs" id="sg-bank"><button class="seg" data-v="100">100€</button><button class="seg active" data-v="200">200€</button><button class="seg" data-v="500">500€</button><button class="seg" data-v="1000">1000€</button></div></div>
+        <div class="srow" style="align-items:center">
+          <span class="lbl">Solde actuel</span>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <span id="sg-wallet" style="font-family:var(--mont);font-weight:800;color:var(--gold);font-size:.95rem">200€</span>
+            <button id="btn-wallet-reset" style="font-size:.62rem;padding:.35rem .6rem;border-radius:8px;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.35);color:var(--ko)">↺ Reset</button>
+          </div>
+        </div>
+        <div id="wallet-reset-confirm" style="display:none;text-align:right;margin-top:-.3rem;margin-bottom:.5rem">
+          <span style="font-size:.68rem;color:var(--txt-3);margin-right:.5rem">Remettre au montant de départ ?</span>
+          <button id="btn-wallet-reset-yes" style="font-size:.66rem;padding:.3rem .7rem;border-radius:7px;background:var(--ko);color:#fff;margin-right:.25rem">Oui</button>
+          <button id="btn-wallet-reset-no" class="xbtn" style="font-size:.66rem">Non</button>
+        </div>
+        <div class="srow"><span class="lbl">Montant de départ</span><div class="segs" id="sg-bank"><button class="seg" data-v="100">100€</button><button class="seg active" data-v="200">200€</button><button class="seg" data-v="500">500€</button><button class="seg" data-v="1000">1000€</button></div></div>
         <div class="srow"><span class="lbl">Mise min.</span><div class="segs" id="sg-minbet"><button class="seg" data-v="1">1€</button><button class="seg" data-v="2">2€</button><button class="seg active" data-v="5">5€</button><button class="seg" data-v="10">10€</button><button class="seg" data-v="25">25€</button><button class="seg" data-v="50">50€</button></div></div>
         <div class="srow"><span class="lbl">Side bet Buster</span><div class="segs" id="sg-buster"><button class="seg active" data-v="0">Off</button><button class="seg" data-v="1">1€</button><button class="seg" data-v="2">2€</button><button class="seg" data-v="5">5€</button></div></div>
       </div>
@@ -667,9 +679,30 @@ const ACHS=[
 {id:"bj5",ic:"🌟",nm:"5 Blackjacks",ds:"Obtenir 5 Blackjacks",xp:100,ck:s=>s.bjs>=5},
 {id:"wr60",ic:"🧠",nm:"Stratège",ds:"60% de win rate sur 20+ mains",xp:80,ck:s=>s.hands>=20&&s.wins/s.hands>=.6}];
 
-let PL={xp:0,achs:[],bonusDay:null};
+let PL={xp:0,achs:[],bonusDay:null,wallet:null};
 try{const s=localStorage.getItem('ra_pl');if(s)PL=Object.assign(PL,JSON.parse(s));}catch(e){}
 function savePL(){try{localStorage.setItem('ra_pl',JSON.stringify(PL));}catch(e){}}
+/* Portefeuille persistant : argent réel du joueur (survit aux sessions, inclut achats/bonus) */
+function getWallet(){
+  if(PL.wallet===null||PL.wallet===undefined||isNaN(PL.wallet)){
+    PL.wallet=+segv('sg-bank')||200;savePL();
+  }
+  return PL.wallet;
+}
+function addToWallet(amt){
+  getWallet();PL.wallet+=amt;savePL();
+  if(G.started){G.bank+=amt;G.net=G.bank-G.startBank;}
+}
+function syncWallet(){
+  if(G.started){PL.wallet=G.bank;savePL();}
+}
+/* Réinitialise le portefeuille à la valeur du réglage bankroll (paramètres) */
+function resetWallet(){
+  PL.wallet=+segv('sg-bank')||200;savePL();
+}
+function renderSettingsWallet(){
+  const el=$('sg-wallet');if(el)el.textContent=getWallet()+'€';
+}
 function lvlData(){
   let i=0;for(let k=0;k<RANKS.length;k++)if(PL.xp>=RANKS[k][1])i=k;
   const cur=RANKS[i],next=RANKS[Math.min(i+1,RANKS.length-1)];
@@ -699,7 +732,7 @@ function checkAchs(){
 let G={cfg:{decks:6,bjPay:1.5,surr:'none',hitS17:true,das:true,startBank:200,minBet:5,
   busterAmt:0,chart:true,edge:true,train:true,speed:380,maxH:0,snd:false},
   shoe:[],si:0,dealt:{},bank:200,bet:0,bbet:0,lastBet:0,split:null,ph:[],dh:[],phase:'bet',
-  hands:0,wins:0,losses:0,pushes:0,bjs:0,net:0,str:0,best:0,dWins:0,comeback:false,started:false};
+  hands:0,wins:0,losses:0,pushes:0,bjs:0,net:0,str:0,best:0,dWins:0,comeback:false,started:false,startBank:200};
 let A_open=false,A_tab='deck',S_open=false;
 const $=id=>document.getElementById(id);
 
@@ -895,7 +928,9 @@ function startGame(){
     chart:$('t-chart').checked,edge:$('t-edge').checked,train:$('t-train').checked,
     speed:+segv('sg-speed'),maxH:+segv('sg-maxh')||0,snd:$('t-snd').checked};
   if(isNaN(G.cfg.speed))G.cfg.speed=380;
-  G.bank=G.cfg.startBank;G.bet=0;G.bbet=0;G.lastBet=0;G.split=null;G.dealt={};
+  /* La bankroll de jeu = portefeuille persistant (inclut achats boutique + bonus) */
+  G.bank=getWallet();G.startBank=G.bank;
+  G.bet=0;G.bbet=0;G.lastBet=0;G.split=null;G.dealt={};
   G.hands=0;G.wins=0;G.losses=0;G.pushes=0;G.bjs=0;G.net=0;G.str=0;G.best=0;G.dWins=0;G.comeback=false;
   G.ph=[];G.dh=[];G.shoe=buildShoe(G.cfg.decks);G.si=0;G.phase='bet';G.started=true;
   A_open=false;S_open=false;
@@ -1034,8 +1069,8 @@ function endSplit(){
   const d10=Math.floor(G.wins/10)-Math.floor(w0/10);
   if(d10>0)addXP(10*d10);
   G.str=net>0?G.str+1:0;G.best=Math.max(G.best,G.str);
-  G.net=G.bank-G.cfg.startBank;
-  if(G.bank<20&&G.cfg.startBank>=100)G.comeback=true;
+  G.net=G.bank-G.startBank;
+  if(G.bank<20&&G.startBank>=100)G.comeback=true;
   if(net>0)sWin();else if(net<0)sLose();
   showResult('🂡','SPLIT',(net>=0?'+':'')+net+'€',lines.join('   ')+(bw>0?'  🎰 Buster +'+bw+'€':''),net,true);
   G.split=null;G.bet=0;G.bbet=0;
@@ -1058,8 +1093,8 @@ function endHand(o){
   if(o==='blackjack')addXP(5);
   if((o==='win'||o==='blackjack')&&G.wins>0&&G.wins%10===0)addXP(10);
   G.str=net>0?G.str+1:0;G.best=Math.max(G.best,G.str);
-  G.net=G.bank-G.cfg.startBank;
-  if(G.bank<20&&G.cfg.startBank>=100)G.comeback=true;
+  G.net=G.bank-G.startBank;
+  if(G.bank<20&&G.startBank>=100)G.comeback=true;
   let amt=(net>0?'+':net<0?'−':'')+Math.abs(net)+'€';
   if(bw>0)amt+='  🎰 +'+bw+'€';
   showResult(ico,title,amt,sub||('Session : '+(G.net>=0?'+':'')+G.net+'€'),net,false);
@@ -1088,6 +1123,7 @@ function showResult(ico,title,amt,sub,net,split){
 function finishHand(){
   renderTop();renderCards();renderTotals();
   $('chip-area').innerHTML='';$('actions').innerHTML='';
+  syncWallet();
   addXP(1);
   checkAchs();
   if(G.cfg.maxH>0&&G.hands>=G.cfg.maxH)$('res-s').textContent='Session terminée — '+G.hands+' mains jouées.';
@@ -1332,13 +1368,14 @@ function goPage(p){
   if(p==='home'){$('nav-home').classList.add('active');renderHome();}
   if(p==='shop'){$('nav-shop').classList.add('active');renderShop();}
   if(p==='profile'){$('nav-profile').classList.add('active');renderProfile();}
+  if(p==='settings'){renderSettingsWallet();}
 }
 function renderHome(){
   const L=lvlData();
   $('home-lvl').textContent=L.lvl;$('home-lvl-pin').textContent=L.lvl;
   $('home-rank').textContent=L.name;
   $('home-xp-cur').textContent=L.got+' XP';$('home-xp-max').textContent=L.need+' XP';
-  $('home-chips').textContent=G.started?G.bank:G.cfg.startBank;
+  $('home-chips').textContent=G.started?G.bank:getWallet();
   $('home-minbet').textContent=G.cfg.minBet;
   const xf=$('home-xpf');xf.style.width='0%';setTimeout(()=>xf.style.width=L.pct+'%',60);
   $('home-wr').textContent=G.hands?Math.round(G.wins/G.hands*100)+'%':'—';
@@ -1375,7 +1412,7 @@ function claimBonus(){
   if(PL.bonusDay===today)return;
   const L=lvlData(),amt=50+(L.lvl-1)*10;
   PL.bonusDay=today;savePL();
-  if(G.started)G.bank+=amt;else G.cfg.startBank+=amt;
+  addToWallet(amt);
   toast('🎁 +'+amt+'€ de bonus !','#ffe088');sWin();
   renderHome();
 }
@@ -1409,7 +1446,7 @@ function openBuy(i){
 function confirmBuy(){
   if(buyIdx<0)return;
   const p=PACKS[buyIdx];
-  if(G.started)G.bank+=p.ch;else G.cfg.startBank+=p.ch;
+  addToWallet(p.ch);
   addXP(2);toast('💎 +'+p.ch+'€ ajoutés !','#ffe088');sWin();
   $('buy-modal').classList.remove('open');buyIdx=-1;
   renderShop();renderHome();
@@ -1470,6 +1507,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('buy-yes').addEventListener('click',confirmBuy);
   $('buy-no').addEventListener('click',()=>$('buy-modal').classList.remove('open'));
   $('btn-reset').addEventListener('click',()=>{$('reset-confirm').style.display='block';});
+  $('btn-wallet-reset').addEventListener('click',()=>{$('wallet-reset-confirm').style.display='block';});
+  $('btn-wallet-reset-no').addEventListener('click',()=>{$('wallet-reset-confirm').style.display='none';});
+  $('btn-wallet-reset-yes').addEventListener('click',()=>{
+    resetWallet();renderSettingsWallet();
+    $('wallet-reset-confirm').style.display='none';
+    toast('↺ Solde réinitialisé à '+PL.wallet+'€','#f2ca50');
+  });
   $('btn-reset-no').addEventListener('click',()=>{$('reset-confirm').style.display='none';});
   $('btn-reset-yes').addEventListener('click',()=>{
     G.hands=0;G.wins=0;G.losses=0;G.pushes=0;G.bjs=0;G.net=0;G.str=0;G.best=0;G.dWins=0;G.comeback=false;
